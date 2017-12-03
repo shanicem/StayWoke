@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Stay Woke!</string>
+    <string name="search_title">Search</string>
+    <string name="search_hint">Search</string>
+    <string name="distance_placeholder">… km</string>
+    <string name="distance_message">until your destination</string>
+    <string name="distance_unit">km</string>
+    <string name="dialog_title">Wake up!</string>
+    <string name="dialog_message">You\'re almost there</string>
+    <string name="dialog_ok">OK</string>
+</resources>

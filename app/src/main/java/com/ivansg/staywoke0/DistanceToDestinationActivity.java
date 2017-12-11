@@ -98,14 +98,28 @@ public class DistanceToDestinationActivity extends AppCompatActivity {
 
     // alert the user when they are within a certain km of their destination
     private void wakeUpUser() {
-        userAlerted = true;
 
         // vibrate the phone
         final Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        if (Build.VERSION.SDK_INT >= 26) {
-            v.vibrate(VibrationEffect.createWaveform(new long[]{1}, 0));
-        } else {
-            v.vibrate(new long[]{1}, 0);
+
+        if (v.hasVibrator()) {
+
+            // Pattern to use for vibration
+            // [0] - Delay in seconds
+            // [1] - Duration of vibration
+            // [...] - Pattern repeats
+            long [] vibratePattern = new long[]{400, 800, 400, 800, 400, 800, 400, 800, 400, 800};
+
+            // Amplitude pattern to follow for vibration
+            // Amplitude will slowly increase until reaching maximum
+            int[] amplitudes = new int[] {0, 50, 0, 100, 0, 150, 0, 200, 0, 255};
+
+            if (Build.VERSION.SDK_INT >= 26) {
+                VibrationEffect effect = VibrationEffect.createWaveform(vibratePattern, amplitudes, 8);
+                v.vibrate(effect);
+            } else {
+                v.vibrate(vibratePattern, 0);
+            }
         }
 
         // create and display dialog
@@ -121,5 +135,7 @@ public class DistanceToDestinationActivity extends AppCompatActivity {
         });
         AlertDialog dialog = builder.create();
         dialog.show();
+
+        userAlerted = true;
     }
 }

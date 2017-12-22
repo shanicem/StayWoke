@@ -16,6 +16,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -91,34 +92,57 @@ public class DistanceToDestinationActivity extends AppCompatActivity {
         TextView textView = (TextView) findViewById(R.id.textView);
         textView.setText(String.format("%.2f", distance) + " km");
 
+        // alert the user when they are within a certain km of their destination
         if (distance <= MIN_DISTANCE && !userAlerted) {
-            wakeUpUser();
+            vibratePhone();
+            userAlerted = true;
         }
     }
 
-    // alert the user when they are within a certain km of their destination
-    private void wakeUpUser() {
-        userAlerted = true;
+    // vibrate the phone when the user is near their stop
+    private void vibratePhone() {
 
         // vibrate the phone
-        final Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        if (Build.VERSION.SDK_INT >= 26) {
-            v.vibrate(VibrationEffect.createWaveform(new long[]{1}, 0));
-        } else {
-            v.vibrate(new long[]{1}, 0);
+        final Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        if (vibrator.hasVibrator()) {
+
+            // Pattern to use for vibration
+            // [0] - Delay in seconds
+            // [1] - Duration of vibration
+            // [...] - Pattern repeats
+            long [] vibratePattern = new long[]{400, 800, 400, 800, 400, 800, 400, 800, 400, 800};
+
+            // Amplitude pattern to follow for vibration
+            // Amplitude will slowly increase until reaching maximum
+            int[] amplitudes = new int[] {0, 50, 0, 100, 0, 150, 0, 200, 0, 255};
+
+            if (Build.VERSION.SDK_INT >= 26) {
+                VibrationEffect effect = VibrationEffect.createWaveform(vibratePattern, amplitudes, 8);
+                vibrator.vibrate(effect);
+            } else {
+                vibrator.vibrate(vibratePattern, 0);
+            }
         }
 
-        // create and display dialog
+        displayDialog(vibrator);
+    }
+
+    // display a dialog to alert the user when they are near their destination
+    private void displayDialog(final Vibrator vibrator) {
+        // define dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.dialog_message)
-                .setTitle(R.string.dialog_title);
-        // Add an OK button, that when selected will stop vibration and location updates
+        LayoutInflater inflater = this.getLayoutInflater();
+        builder.setView(inflater.inflate(R.layout.alert_dialog, null));
+
+        // Add an OK button, that when selected will stop vibration
         builder.setNeutralButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                Log.d("Log", "User clicked OK");
-                v.cancel();
+                vibrator.cancel();
             }
         });
+
+        // create and display dialog
         AlertDialog dialog = builder.create();
         dialog.show();
     }

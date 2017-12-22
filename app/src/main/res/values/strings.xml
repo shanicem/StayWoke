@@ -8,4 +8,5 @@
     <string name="dialog_title">Wake up!</string>
     <string name="dialog_message">You\'re almost there</string>
     <string name="dialog_ok">OK</string>
+    <string name="welcome_message">Look for TransLink stops by pressing the search button on the top right.</string>
 </resources>

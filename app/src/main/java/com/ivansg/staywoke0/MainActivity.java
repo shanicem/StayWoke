@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         searchView.setSearchableInfo(searchableInfo);
         searchView.setIconifiedByDefault(false);
+        searchView.setIconified(false);
         searchView.requestFocusFromTouch();
 
         return true;
